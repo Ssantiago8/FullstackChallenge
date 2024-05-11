@@ -1,0 +1,5 @@
+# Ignorar node_modules en el frontend
+frontend/retofront/node_modules/
+
+# Ignorar node_modules en el backend
+backend/node_modules/
