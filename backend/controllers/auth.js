@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 require("dotenv").config();
+
 // Register a new user
 const register = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -11,8 +12,8 @@ const register = async (req, res, next) => {
     const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
       expiresIn: "2 hours",
     });
-    res.json({ token });
-    res.json({ message: "Registration successful" });
+    res.cookie("token", token, { httpOnly: true, sameSite: "strict" }); // Modificación aquí
+    res.status(200).json({ message: "Registration successful" });
   } catch (error) {
     next(error);
   }
@@ -35,7 +36,8 @@ const login = async (req, res, next) => {
     const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
       expiresIn: "2 hours",
     });
-    res.json({ token });
+    res.cookie("token", token, { httpOnly: true, sameSite: "strict" }); // Modificación aquí
+    res.status(200).json({ message: "Login successful" });
   } catch (error) {
     next(error);
   }

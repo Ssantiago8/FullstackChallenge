@@ -3,7 +3,7 @@ export default function Banner() {
       <div
         style={{
           backgroundColor: '#f0e2f3',
-          height: '10vh',
+          height: '15vh',
           width: '100vw',
           display: 'flex',
           justifyContent: 'center',

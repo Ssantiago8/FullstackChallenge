@@ -1,4 +1,4 @@
-import Login from './login.jsx';
+import Loginform from './components/loginform.jsx';
 export default function Page() {
-  return (<Login/>  )
+  return (<Loginform/>  )
 }
