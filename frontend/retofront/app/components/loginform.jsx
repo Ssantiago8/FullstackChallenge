@@ -14,17 +14,22 @@ export default function loginform() {
     const router = useRouter();
 
     const handleSubmit = async (values) => {
-        console.log(values);
-        try {
-            const res = await axios.post("http://localhost:3001/auth/login", values);
-            if (res.status === 200) {
-                console.log("Login successful");
-                router.push("/");
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+      console.log(values);
+      try {
+          const res = await axios.post("http://localhost:3001/auth/login", values);
+          if (res.status === 200) {
+              console.log("Login successful");
+              const token = res.data.token;
+              if (token) {
+                  localStorage.setItem("token", token); 
+              }
+              router.push("/dashboard");
+          }
+      } catch (error) {
+          console.error(error);
+      }
+  };
+  
 
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "250px" }}>

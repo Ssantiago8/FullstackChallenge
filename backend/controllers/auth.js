@@ -12,7 +12,7 @@ const register = async (req, res, next) => {
     const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
       expiresIn: "2 hours",
     });
-    res.cookie("token", token, { httpOnly: true, sameSite: "strict" }); // Modificación aquí
+    res.cookie("token", token, { httpOnly: true, sameSite: "none", path: "/" });
     res.status(200).json({ message: "Registration successful" });
   } catch (error) {
     next(error);
@@ -36,8 +36,8 @@ const login = async (req, res, next) => {
     const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
       expiresIn: "2 hours",
     });
-    res.cookie("token", token, { httpOnly: true, sameSite: "strict" }); // Modificación aquí
-    res.status(200).json({ message: "Login successful" });
+    res.cookie("token", token, { httpOnly: true, sameSite: "none", path: "/" });
+    res.status(200).json({ token, message: "Login successful" });
   } catch (error) {
     next(error);
   }
