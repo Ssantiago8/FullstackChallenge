@@ -104,4 +104,29 @@ const updateContact = async (req, res, next) => {
   }
 };
 
-module.exports = { createContact, getContacts, updateContact };
+const getContactById = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const contactId = req.params.id;
+
+    // Buscar al usuario y asegurarse de que el contacto pertenezca al usuario
+    const user = await User.findById(userId).populate("contacts");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Buscar el contacto por su ID
+    const contact = user.contacts.find(
+      (contact) => contact._id.toString() === contactId
+    );
+    if (!contact) {
+      return res.status(404).json({ message: "Contact not found" });
+    }
+
+    res.json(contact);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createContact, getContacts, updateContact, getContactById };
