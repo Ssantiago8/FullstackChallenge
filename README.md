@@ -12,3 +12,13 @@ https://www.loom.com/share/4993121caec84b90a734b62c32450261?sid=bdd5e226-6fdb-47
 https://www.loom.com/share/ba305eb1379741728e37b629a129cac4
 
 14/05/2024---------------------------------------------------------------------------------
+
+A la fecha el proyecto esta completado, todas las vistas están completadas, la integracion del componente para autocompletar el address tambien esta completa, para crear y editar la misma, de igual forma los contactos están paginados para su navegación.
+
+En el siguiente video se evidencia la integración con la API de google para el campo address y demás funcionalidades:
+
+https://www.loom.com/share/a570e25787ca47bab690161c3c1cc58c?sid=cbda25bb-563d-4b7f-af11-566209a62f01
+
+Atentamente,
+Santiago
+15/05/2024---------------------------------------------------------------------------------
