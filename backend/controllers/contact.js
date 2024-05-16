@@ -7,9 +7,9 @@ require("dotenv").config();
 const createContact = async (req, res, next) => {
   try {
     const { name, address, email, phoneNumber, profilePictureUrl } = req.body;
-    const userId = req.user._id; // Se asume que req.user contiene la información del usuario autenticado
+    const userId = req.user._id; // Assumes req.user contains the authenticated user information
 
-    // Crear el contacto
+    // Create the contact
     const contact = await Contact.create({
       name,
       address,
@@ -19,10 +19,11 @@ const createContact = async (req, res, next) => {
       user: userId,
     });
 
-    // Agregar el ID del contacto al array de contactos del usuario
+    // Add contact ID to the user's contacts array
     await User.findByIdAndUpdate(userId, { $push: { contacts: contact._id } });
 
     res.status(201).json({ message: "Contact created succesfully", contact });
+    console.log("Contact created succesfully", contact);
   } catch (error) {
     next(error);
   }
@@ -32,34 +33,26 @@ const createContact = async (req, res, next) => {
 const getContacts = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const page = parseInt(req.query.page) || 1; // Actual page number
-    const pageSize = parseInt(req.query.pageSize) || 10; // Default page size to 10
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
 
-    // Calculate the start index of the contacts
-    const startIndex = (page - 1) * pageSize;
-
-    // Find the user and populate the contacts with pagination
-    const user = await User.findById(userId).populate({
-      path: "contacts",
-      options: {
-        skip: startIndex,
-        limit: pageSize,
-      },
-    });
+    const user = await User.findById(userId).populate("contacts");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Obtain total count of contacts
-    const totalCount = user.contacts.length;
-
-    // Calculate total pages
+    const allContacts = user.contacts;
+    const totalCount = allContacts.length;
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    // build response
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, totalCount);
+    const contactsToShow = allContacts.slice(startIndex, endIndex);
+
+    // Build response
     const response = {
-      contacts: user.contacts,
+      contacts: contactsToShow,
       pagination: {
         totalItems: totalCount,
         totalPages: totalPages,
@@ -74,7 +67,7 @@ const getContacts = async (req, res, next) => {
   }
 };
 
-//Update a contact
+// Update a contact
 const updateContact = async (req, res, next) => {
   try {
     const userId = req.user._id;
@@ -104,18 +97,19 @@ const updateContact = async (req, res, next) => {
   }
 };
 
+// Get a contact by ID
 const getContactById = async (req, res, next) => {
   try {
     const userId = req.user._id;
     const contactId = req.params.id;
 
-    // Buscar al usuario y asegurarse de que el contacto pertenezca al usuario
+    // Find the user and ensure the contact belongs to the user
     const user = await User.findById(userId).populate("contacts");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Buscar el contacto por su ID
+    // Find the contact by its ID
     const contact = user.contacts.find(
       (contact) => contact._id.toString() === contactId
     );

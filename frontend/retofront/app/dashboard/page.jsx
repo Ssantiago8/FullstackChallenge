@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -7,13 +8,15 @@ import { useRouter } from 'next/navigation';
 export default function Dashboard() {
     const [contacts, setContacts] = useState([]);
     const [showNoContactsImage, setShowNoContactsImage] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1); // Página actual
+    const [totalPages, setTotalPages] = useState(0); // Total de páginas
     const router = useRouter();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             axios
-                .get('http://localhost:3001/contact/getallcontacts', {
+                .get(`http://localhost:3001/contact/getallcontacts?page=${currentPage}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -21,6 +24,7 @@ export default function Dashboard() {
                 .then((response) => {
                     console.log(response.data);
                     setContacts(response.data.contacts);
+                    setTotalPages(response.data.totalPages);  
                     if (response.data.contacts.length === 0) {
                         setTimeout(() => {
                             setShowNoContactsImage(true);
@@ -31,7 +35,7 @@ export default function Dashboard() {
                     console.error(error);
                 });
         }
-    }, []);
+    }, [currentPage]);
 
     const handleContactClick = (contactId) => {
         localStorage.setItem('contactId', contactId);
@@ -42,6 +46,18 @@ export default function Dashboard() {
         router.push('/contacts/create');
     };
 
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
     return (
         <div className="bg-[#faf9fe] min-h-screen p-4">
             <h2 className="text-2xl font-bold mb-4 ml-20">Contacts</h2>
@@ -50,8 +66,8 @@ export default function Dashboard() {
                     <img src="https://i.ibb.co/6ykyYGt/image-removebg-preview-10.png" alt="No Contacts" className="w-30 h-30 mb-4" />
                     <p className="text-lg font-bold">Add contacts to your database</p>
                     <button onClick={handleCreateContact} className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 border rounded-full mt-4 transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl">
-                        Add new contacts
-                    </button>
+                Add New Contact
+            </button>
                 </div>
             )}
             {contacts.length > 0 && (
@@ -75,9 +91,17 @@ export default function Dashboard() {
                             </div>
                         ))}
                     </div>
-                    <button onClick={handleCreateContact} className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 border rounded-full mt-4 float-right mr-4 transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl">
-                        Create Contact
-                    </button>
+                    <div className="flex justify-between mt-4">
+                    <button onClick={handleCreateContact} className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 border rounded-full mt-4 transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl">
+                Add New Contact
+            </button>
+            <button onClick={handlePreviousPage} className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 border rounded-full mr-2 transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl" disabled={currentPage === 1}>
+                            Previous
+                        </button>
+                        <button onClick={handleNextPage} className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 border rounded-full ml-2 transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl" disabled={currentPage === totalPages}>
+                            Next
+                        </button>
+                    </div>
                 </>
             )}
         </div>

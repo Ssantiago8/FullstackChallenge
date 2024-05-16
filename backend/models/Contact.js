@@ -17,7 +17,7 @@ const contactSchema = new mongoose.Schema(
       type: String,
     },
     phoneNumber: {
-      type: String,
+      type: Number,
     },
     profilePictureUrl: {
       type: String,
